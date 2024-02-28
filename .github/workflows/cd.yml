@@ -8,6 +8,22 @@ on:
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
 jobs:
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          mkdir tmp
+          cd tmp
+          curl -fsSL https://github.com/lukeshay/deployer/releases/download/v0.0.1/deployer-linux-x86_64.tar.gz --output deployer.tar.gz
+          tar -xzvf deployer.tar.gz
+      - name: Dagger
+        uses: dagger/dagger-action@v1
+        env:
+          GHCR_PASSWORD: ${{ secrets.GHCR_PASSWORD }}
+        with:
+          verb: run
+          args: ./tmp/deployer docker build --docker-username actions --repo lukeshay/deployer --ref main --tags "main,latest,$GITHUB_SHA" --publish --local
   deploy:
     runs-on: ubuntu-22.04
     environment:

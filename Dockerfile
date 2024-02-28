@@ -7,7 +7,7 @@ COPY package.json bun.lockb ./
 RUN bun install
 
 COPY tailwind.config.js globals.css ./
-COPY assets ./assets
+COPY public ./public
 COPY templates ./templates
 
 RUN bun run build
@@ -24,7 +24,7 @@ RUN go mod download
 
 COPY pkg ./pkg
 COPY templates ./templates
-COPY assets ./assets
+COPY public ./public
 COPY main.go ./
 COPY .git ./.git
 
