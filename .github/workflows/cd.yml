@@ -24,16 +24,11 @@ jobs:
           cd tmp
           curl -fsSL https://github.com/lukeshay/deployer/releases/download/v0.0.3/deployer-linux-x86_64.tar.gz --output deployer.tar.gz
           tar -xzvf deployer.tar.gz
-      - uses: docker/login-action@v2
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-      - run: docker pull ghcr.io/lukeshay/records:main
       - uses: dagger/dagger-for-github@v5
         with:
-          verb: run
           args: ./tmp/deployer dagger docker build --username ${{ github.actor }} --password ${{ secrets.GITHUB_TOKEN }} --repository ghcr.io/lukeshay/records --tags "main,latest,$GITHUB_SHA" --labels "org.opencontainers.image.revision=$GITHUB_SHA" --publish
+          cloud-token: ${{ secrets.DAGGER_CLOUD_TOKEN }}
+          verb: run
   deploy:
     needs:
       - build
