@@ -9,11 +9,6 @@ on:
 concurrency:
   group: ${{ github.workflow }}
 
-permissions:
-  contents: read
-  packages: write
-  id-token: write
-
 jobs:
   build:
     runs-on: ubuntu-22.04
@@ -24,9 +19,15 @@ jobs:
           cd tmp
           curl -fsSL https://github.com/lukeshay/deployer/releases/download/v0.0.3/deployer-linux-x86_64.tar.gz --output deployer.tar.gz
           tar -xzvf deployer.tar.gz
+      - uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GHCR_PASSWORD }}
+      - run: docker pull ghcr.io/lukeshay/records:main
       - uses: dagger/dagger-for-github@v5
         with:
-          args: ./tmp/deployer dagger docker build --username ${{ github.actor }} --password ${{ secrets.GITHUB_TOKEN }} --repository ghcr.io/lukeshay/records --tags "main,latest,$GITHUB_SHA" --labels "org.opencontainers.image.revision=$GITHUB_SHA" --publish
+          args: ./tmp/deployer dagger docker build --username ${{ github.actor }} --password ${{ secrets.GHCR_PASSWORD }} --repository ghcr.io/lukeshay/records --tags "main,latest,$GITHUB_SHA" --labels "org.opencontainers.image.revision=$GITHUB_SHA" --publish
           cloud-token: ${{ secrets.DAGGER_CLOUD_TOKEN }}
           verb: run
   deploy:
@@ -41,7 +42,7 @@ jobs:
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          password: ${{ secrets.GHCR_PASSWORD }}
       - uses: superfly/flyctl-actions/setup-flyctl@master
       - run: docker pull ghcr.io/lukeshay/records:$GITHUB_SHA
       - run: flyctl deploy --image ghcr.io/lukeshay/records:$GITHUB_SHA
