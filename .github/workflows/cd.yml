@@ -8,6 +8,11 @@ on:
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
+permissions:
+  contents: read
+  packages: write
+  id-token: write
+
 jobs:
   build:
     runs-on: ubuntu-22.04
@@ -16,15 +21,15 @@ jobs:
       - run: |
           mkdir tmp
           cd tmp
-          curl -fsSL https://github.com/lukeshay/deployer/releases/download/v0.0.2/deployer-linux-x86_64.tar.gz --output deployer.tar.gz
+          curl -fsSL https://github.com/lukeshay/deployer/releases/download/v0.0.3/deployer-linux-x86_64.tar.gz --output deployer.tar.gz
           tar -xzvf deployer.tar.gz
       - name: Dagger
         uses: dagger/dagger-for-github@v5
         env:
-          DEPLOYER_DOCKER_PASSWORD: ${{ secrets.GHCR_PASSWORD }}
+          DEPLOYER_DOCKER_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
         with:
           verb: run
-          args: ./tmp/deployer dagger docker build --username actions --repository ghcr.io/lukeshay/deployer --tags "main,latest,$GITHUB_SHA" --publish
+          args: ./tmp/deployer dagger docker build --username ${{ github.actor }} --repository ghcr.io/lukeshay/deployer --tags "main,latest,$GITHUB_SHA" --labels "org.opencontainers.image.revision=$GITHUB_SHA" --publish
   deploy:
     needs:
       - build
@@ -33,6 +38,11 @@ jobs:
       name: prod
       url: https://ls-records.fly.dev/
     steps:
+      - uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/checkout@v4
       - run: docker pull ghcr.io/lukeshay/deployer:$GITHUB_SHA
       - uses: superfly/flyctl-actions/setup-flyctl@master

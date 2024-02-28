@@ -32,6 +32,8 @@ RUN CGO_ENABLED=0 GOOS=linux go build  -ldflags="-X 'github.com/lukeshay/pkg/con
 
 FROM scratch
 
+LABEL org.opencontainers.image.source "github.com/lukeshay/records"
+
 COPY --from=builder /go/bin/records /go/bin/records
 
 ENTRYPOINT ["/go/bin/records"]
