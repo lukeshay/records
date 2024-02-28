@@ -1,0 +1,22 @@
+# https://docs.datadoghq.com/service_catalog/adding_metadata/#metadata-structure-and-supported-versions
+schema-version: v2.2
+dd-service: records
+team: core
+application: records
+tier: "1"
+type: web
+languages:
+  - go
+  - html
+  - javascript
+contacts:
+  - type: email
+    contact: shay.luke17@gmail.com
+links:
+  - name: Source
+    type: repo
+    provider: github
+    url: https://github.com/lukeshay/records
+tags:
+  - business-unit:retail
+  - cost-center:engineering

@@ -10,5 +10,4 @@ services:
       - 8080:8080
     environment:
       - PORT=8080
-    links:
-      - records-datadog-agent
+      - ENVIRONMENT=local

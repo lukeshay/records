@@ -1,0 +1,14 @@
+{
+  "name": "records",
+  "type": "module",
+  "scripts": {
+    "build": "tailwindcss -i globals.css -o public/globals.css",
+    "watch": "bun run build --watch"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.1"
+  },
+  "dependencies": {
+    "daisyui": "^4.7.2"
+  }
+}

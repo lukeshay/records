@@ -13,6 +13,8 @@ ENVIRONMENT = "prod"
 DD_AGENT_HOST = "ls-datadog-agent.internal"
 PORT = "8080"
 GIN_MODE = "release"
+DATADOG_CLIENT_TOKEN = "pubd3c5eb1227f7423b64b6b76beadd8231"
+DD_SERVICE = "records"
 
 [http_service]
 internal_port = 8080

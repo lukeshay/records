@@ -1,0 +1,21 @@
+{{block "auth_form" .}}
+<div class="w-full flex p-4 pt-36 flex-col">
+  <form method="POST" class="w-full max-w-sm mx-auto space-y-4">
+    {{template "form_field" dict "Label" "Email" "Name" "email" "ID" "email"
+    "Type" "email" "Required" "true"}}
+    <!-- seperate -->
+    {{template "form_field" dict "Label" "Password" "Name" "password" "ID"
+    "password" "Type" "password" "Required" "true"}}
+    <!-- seperate -->
+    {{if .IsSignUp}}
+    <!-- seperate -->
+    {{template "form_field" dict "Label" "Repeat Password" "Name"
+    "repeatPassword" "ID" "repeatPassword" "Type" "password" "Required" "true"}}
+    <!-- seperate -->
+    <button type="submit" class="btn btn-primary">Sign Up</button>
+    {{else}}
+    <button type="submit" class="btn btn-primary">Sign In</button>
+    {{end}}
+  </form>
+</div>
+{{end}}

@@ -1,0 +1,27 @@
+{{block "datadog_rum" .}}
+<script
+  src="https://www.datadoghq-browser-agent.com/us1/v5/datadog-rum.js"
+  type="text/javascript"
+></script>
+<script>
+  if ("{{.DatadogClientToken}}" !== "" && window.DD_RUM) {
+    window.DD_RUM.init({
+      clientToken: "{{.DatadogClientToken}}",
+      applicationId: "90ca5b8b-1801-48ed-994e-7bd99a96175a",
+      site: "datadoghq.com",
+      service: "records",
+      env: "{{.Environment}}",
+      version: "{{.Version}}",
+      sessionSampleRate: 100,
+      sessionReplaySampleRate: 100,
+      trackUserInteractions: true,
+      trackResources: true,
+      trackLongTasks: true,
+      defaultPrivacyLevel: "mask-user-input",
+      allowedTracingUrls: [
+        (url) => url.includes("localhost") || url.includes("ls-records"),
+      ],
+    });
+  }
+</script>
+{{end}}

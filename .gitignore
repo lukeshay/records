@@ -1,0 +1,4 @@
+.deployer
+tmp
+.assets/globals.css
+.env*

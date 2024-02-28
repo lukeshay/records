@@ -1,0 +1,21 @@
+{{block "form_field" .}}
+<label class="form-control w-full">
+  {{if .Label}}
+  <div class="label">{{.Label}}</div>
+  {{end}}
+  <input
+    type="{{.Type}}"
+    {{if
+    .Placeholder}}
+    placeholder="{{.Placeholder}}"
+    {{end}}
+    name="{{.Name}}"
+    id="{{.ID}}"
+    {{if
+    .Required}}
+    required="{{.Required}}"
+    {{end}}
+    class="input input-bordered w-full"
+  />
+</label>
+{{end}}
