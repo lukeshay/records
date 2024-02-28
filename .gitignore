@@ -1,4 +1,5 @@
 .deployer
-tmp
-.assets/globals.css
 .env*
+node_modules
+public/globals.css
+tmp
