@@ -21,15 +21,7 @@ jobs:
           tar -xzvf deployer.tar.gz
       - uses: dagger/dagger-for-github@v5
         with:
-          args: |
-            ./tmp/deployer dagger docker build \
-                --username ${{ github.actor }} \
-                --password ${{ secrets.GHCR_PASSWORD }} \
-                --repository ghcr.io/lukeshay/records \
-                --tags "main,latest,$GITHUB_SHA" \
-                --labels "org.opencontainers.image.revision=$GITHUB_SHA" \
-                --pull ghcr.io/lukeshay/records:main \
-                --publish
+          args: ./tmp/deployer dagger docker build --username ${{ github.actor }} --password ${{ secrets.GHCR_PASSWORD }} --repository ghcr.io/lukeshay/records --tags "main,latest,$GITHUB_SHA" --labels "org.opencontainers.image.revision=$GITHUB_SHA" --pull ghcr.io/lukeshay/records:main --publish
           cloud-token: ${{ secrets.DAGGER_CLOUD_TOKEN }}
           verb: run
   deploy:
