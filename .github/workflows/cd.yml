@@ -22,7 +22,6 @@ jobs:
         env:
           GHCR_PASSWORD: ${{ secrets.GHCR_PASSWORD }}
         with:
-          verb: run
           args: ./tmp/deployer docker build --docker-username actions --repo lukeshay/deployer --ref main --tags "main,latest,$GITHUB_SHA" --publish --local
   deploy:
     runs-on: ubuntu-22.04
