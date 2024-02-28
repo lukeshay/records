@@ -29,11 +29,11 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - run: docker pull ghcr.io/lukeshay/deployer:main
+      - run: docker pull ghcr.io/lukeshay/records:main
       - uses: dagger/dagger-for-github@v5
         with:
           verb: run
-          args: ./tmp/deployer dagger docker build --username ${{ github.actor }} --password ${{ secrets.GITHUB_TOKEN }} --repository ghcr.io/lukeshay/deployer --tags "main,latest,$GITHUB_SHA" --labels "org.opencontainers.image.revision=$GITHUB_SHA" --publish
+          args: ./tmp/deployer dagger docker build --username ${{ github.actor }} --password ${{ secrets.GITHUB_TOKEN }} --repository ghcr.io/lukeshay/records --tags "main,latest,$GITHUB_SHA" --labels "org.opencontainers.image.revision=$GITHUB_SHA" --publish
   deploy:
     needs:
       - build
@@ -48,7 +48,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - uses: superfly/flyctl-actions/setup-flyctl@master
-      - run: docker pull ghcr.io/lukeshay/deployer:$GITHUB_SHA
-      - run: flyctl deploy --image ghcr.io/lukeshay/deployer:$GITHUB_SHA
+      - run: docker pull ghcr.io/lukeshay/records:$GITHUB_SHA
+      - run: flyctl deploy --image ghcr.io/lukeshay/records:$GITHUB_SHA
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
