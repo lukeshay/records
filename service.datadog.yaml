@@ -17,6 +17,10 @@ links:
     type: repo
     provider: github
     url: https://github.com/lukeshay/records
+  - name: Documentation
+    type: doc
+    provider: wiki
+    url: https://github.com/lukeshay/records/wiki
 tags:
-  - business-unit:retail
+  - team:core
   - cost-center:engineering
