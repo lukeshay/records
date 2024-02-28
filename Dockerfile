@@ -23,8 +23,8 @@ COPY go.mod go.sum ./
 RUN go mod download
 
 COPY pkg ./pkg
-COPY templates ./templates
-COPY public ./public
+COPY --from=assets /app/templates ./templates
+COPY --from=assets /app/public ./public
 COPY main.go ./
 COPY .git ./.git
 
