@@ -38,6 +38,7 @@ jobs:
       name: prod
       url: https://ls-records.fly.dev/
     steps:
+      - uses: actions/checkout@v4
       - uses: docker/login-action@v2
         with:
           registry: ghcr.io
