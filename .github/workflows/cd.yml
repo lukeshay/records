@@ -22,15 +22,18 @@ jobs:
         env:
           GHCR_PASSWORD: ${{ secrets.GHCR_PASSWORD }}
         with:
-          args: ./tmp/deployer docker build --docker-username actions --repo lukeshay/deployer --ref main --tags "main,latest,$GITHUB_SHA" --publish --local
+          args: run ./tmp/deployer docker build --docker-username actions --repo lukeshay/deployer --ref main --tags "main,latest,$GITHUB_SHA" --publish --local
   deploy:
+    needs:
+      - build
     runs-on: ubuntu-22.04
     environment:
       name: prod
       url: https://ls-records.fly.dev/
     steps:
       - uses: actions/checkout@v4
+      - run: docker pull ghcr.io/lukeshay/deployer:$GITHUB_SHA
       - uses: superfly/flyctl-actions/setup-flyctl@master
-      - run: flyctl deploy --remote-only
+      - run: flyctl deploy --image ghcr.io/lukeshay/deployer:$GITHUB_SHA
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
