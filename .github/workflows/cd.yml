@@ -14,14 +14,10 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
-      - run: |
-          mkdir tmp
-          cd tmp
-          curl -fsSL https://github.com/lukeshay/deployer/releases/download/v0.0.4/deployer-linux-x86_64.tar.gz --output deployer.tar.gz
-          tar -xzvf deployer.tar.gz
+      - run: curl https://raw.githubusercontent.com/lukeshay/deployer/main/install.sh | bash
       - uses: dagger/dagger-for-github@v5
         with:
-          args: ./tmp/deployer dagger docker build --username ${{ github.actor }} --password ${{ secrets.GHCR_PASSWORD }} --repository ghcr.io/lukeshay/records --tags "main,latest,$GITHUB_SHA" --labels "org.opencontainers.image.revision=$GITHUB_SHA" --pull ghcr.io/lukeshay/records:main --publish
+          args: ./deployer/deployer dagger docker build --username "${{ github.actor }}" --password "${{ secrets.GHCR_PASSWORD }}" --repository "ghcr.io/lukeshay/records" --tags "main,latest,main-$GITHUB_SHA,$GITHUB_SHA" --labels "org.opencontainers.image.revision=$GITHUB_SHA" --pull ghcr.io/lukeshay/records:main --publish
           cloud-token: ${{ secrets.DAGGER_CLOUD_TOKEN }}
           verb: run
   deploy:
