@@ -10,19 +10,7 @@ concurrency:
   group: ${{ github.workflow }}
 
 jobs:
-  build:
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v4
-      - run: curl https://raw.githubusercontent.com/lukeshay/deployer/main/install.sh | bash
-      - uses: dagger/dagger-for-github@v5
-        with:
-          args: ./deployer/deployer dagger docker build --username "${{ github.actor }}" --password "${{ secrets.GHCR_PASSWORD }}" --repository "ghcr.io/lukeshay/records" --tags "main,latest,main-$GITHUB_SHA,$GITHUB_SHA" --labels "org.opencontainers.image.revision=$GITHUB_SHA" --pull ghcr.io/lukeshay/records:main --publish
-          cloud-token: ${{ secrets.DAGGER_CLOUD_TOKEN }}
-          verb: run
   deploy:
-    needs:
-      - build
     runs-on: ubuntu-22.04
     environment:
       name: prod
@@ -35,7 +23,10 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GHCR_PASSWORD }}
       - uses: superfly/flyctl-actions/setup-flyctl@master
-      - run: docker pull ghcr.io/lukeshay/records:$GITHUB_SHA
-      - run: flyctl deploy --image ghcr.io/lukeshay/records:$GITHUB_SHA
+      - run: curl https://raw.githubusercontent.com/lukeshay/deployer/main/run.sh | bash -s -- dagger docker build --username "${{ github.actor }}" --password "${{ secrets.GHCR_PASSWORD }}" --repository "ghcr.io/lukeshay/records" --identifier $GITHUB_SHA --tags "main,latest,main-$GITHUB_SHA,$GITHUB_SHA" --labels "org.opencontainers.image.revision=$GITHUB_SHA" --pull ghcr.io/lukeshay/records:main --publish
+        env:
+          DAGGER_CLOUD_TOKEN: ${{ secrets.DAGGER_CLOUD_TOKEN }}
+      - run: ./scripts/load.sh ghcr.io/lukeshay/records:$GITHUB_SHA
+      - run: flyctl deploy --local-only --image ghcr.io/lukeshay/records:$GITHUB_SHA
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}

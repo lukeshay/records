@@ -114,10 +114,10 @@ func main() {
 		auth.Post("/signup", routers.PostAuthSignUp)
 	}
 
-	home := app.Group("/")
+	records := app.Group("/records")
 	{
-		home.Use(middleware.AuthRequired())
-		home.Get("/", routers.GetRecords)
+		records.Use(middleware.AuthRequired())
+		records.Get("/", routers.GetRecords)
 	}
 
 	app.Listen(fmt.Sprintf(":%s", env.DefaultEnv("PORT", "8080")))

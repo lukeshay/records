@@ -34,6 +34,9 @@ FROM scratch
 
 LABEL org.opencontainers.image.source "https://github.com/lukeshay/records"
 
+ENV GIN_MODE "release"
+ENV DD_SERVICE "records"
+
 COPY --from=builder /go/bin/records /go/bin/records
 
 ENTRYPOINT ["/go/bin/records"]

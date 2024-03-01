@@ -9,6 +9,7 @@ import (
 
 	"github.com/jmoiron/sqlx"
 	"github.com/lukeshay/records/pkg/config"
+	_ "github.com/mattn/go-sqlite3"
 	"github.com/tursodatabase/libsql-client-go/libsql"
 	sqltrace "gopkg.in/DataDog/dd-trace-go.v1/contrib/database/sql"
 	sqlxtrace "gopkg.in/DataDog/dd-trace-go.v1/contrib/jmoiron/sqlx"
@@ -27,7 +28,6 @@ func InitDb() {
 		fmt.Fprintf(os.Stderr, "failed to open db %s: %s", url, err)
 		os.Exit(1)
 	}
-	defer Database.Close()
 
 	Database.Exec(`
     CREATE TABLE IF NOT EXISTS users (
@@ -59,18 +59,18 @@ type Session struct {
 
 func SelectUserByID(ctx context.Context, id int) (*User, error) {
 	var user User
-	err := Database.GetContext(ctx, &user, "SELECT * FROM users WHERE id = $1", id)
+	err := Database.GetContext(ctx, &user, "SELECT * FROM users WHERE id = ?", id)
 	return &user, err
 }
 
 func SelectUserByEmail(ctx context.Context, email string) (*User, error) {
 	var user User
-	err := Database.GetContext(ctx, &user, "SELECT * FROM users WHERE email = $1", email)
+	err := Database.GetContext(ctx, &user, "SELECT * FROM users WHERE email = ?", email)
 	return &user, err
 }
 
 func InsertUser(ctx context.Context, tx sqlx.ExecerContext, user User) (*User, error) {
-	result, err := tx.ExecContext(ctx, "INSERT INTO users (email, hashed_password) VALUES ($1, $2) RETURNING *", user.Email, user.HashedPassword)
+	result, err := tx.ExecContext(ctx, "INSERT INTO users (email, hashed_password) VALUES (?, ?) RETURNING *", user.Email, user.HashedPassword)
 	if err != nil {
 		return nil, err
 	}
@@ -87,12 +87,12 @@ func InsertUser(ctx context.Context, tx sqlx.ExecerContext, user User) (*User, e
 
 func SelectSessionByID(ctx context.Context, id int) (*Session, error) {
 	var session Session
-	err := Database.GetContext(ctx, &session, "SELECT * FROM sessions WHERE id = $1", id)
+	err := Database.GetContext(ctx, &session, "SELECT * FROM sessions WHERE id = ?", id)
 	return &session, err
 }
 
 func InsertSession(ctx context.Context, tx sqlx.ExecerContext, session Session) (*Session, error) {
-	result, err := tx.ExecContext(ctx, "INSERT INTO sessions (user_id, expires_at) VALUES ($1, $2) RETURNING *", session.UserID, session.ExpiresAt)
+	result, err := tx.ExecContext(ctx, "INSERT INTO sessions (user_id, expires_at) VALUES (?, ?) RETURNING *", session.UserID, session.ExpiresAt)
 	if err != nil {
 		return nil, err
 	}
@@ -131,4 +131,8 @@ func InsertUserAndSession(ctx context.Context, user User) (*User, *Session, erro
 	}
 
 	return insertedUser, session, nil
+}
+
+func IsNoRowsError(err error) bool {
+	return err == sql.ErrNoRows
 }
